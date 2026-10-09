@@ -82,6 +82,19 @@ header.page p{margin:7px 0 0;color:var(--muted);max-width:70ch;font-size:13.5px}
 .add:hover{border-color:var(--emerald);background:rgba(15,135,107,.07)}
 .add span{font-size:16px;line-height:1}
 
+/* operatori */
+.ophead,.oprow{display:grid;grid-template-columns:1fr 1fr 104px 32px;gap:9px;align-items:center}
+.ophead{margin:4px 0 9px;padding:0 2px}
+.ophead span{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ophead .r{text-align:right}
+.oprow{margin-bottom:9px}
+.opsub{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--text);font-weight:600;white-space:nowrap}
+@media(max-width:560px){
+  .ophead{display:none}
+  .oprow{grid-template-columns:1fr 1fr 32px}
+  .oprow .opsub{display:none}
+}
+
 /* ricorrenza: spesa mensile ×12 / spesa singola ÷12 */
 .rec{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:12px}
 .rec-lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:1px}
@@ -180,33 +193,32 @@ aside{position:sticky;top:24px}
       <!-- FURGONE + TECNICO -->
       <div class="panel">
         <div class="eyebrow">Costi diretti</div>
-        <h3>Furgone e tecnico</h3>
-        <div class="pairgrid">
-          <div>
-            <div class="subh">Furgone <span class="tot num" id="totFurg" style="float:none">0,00 €</span></div>
-            <div class="row2">
-              <label class="fld"><span>Costo orario</span>
-                <div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" id="furgOra" placeholder="0,00"><span class="suf">/ h</span></div></label>
-              <label class="fld"><span>Ore</span>
-                <div class="inp"><input type="number" step="any" min="0" id="furgOre" placeholder="0"><span class="suf">h</span></div></label>
-            </div>
-            <div class="rec" data-cost="furg"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
+        <h3>Furgone e operatori</h3>
+
+        <!-- OPERATORI -->
+        <div class="subh">Operatori <span class="tot num" id="totTec" style="float:none">0,00 €</span></div>
+        <p class="ph" style="margin-bottom:10px">Un operatore (tecnico) per riga, col suo costo orario aziendale e le ore. Dal 3° operatore scatta in automatico un 2° furgone (2 operatori per furgone).</p>
+        <div class="ophead"><span>Costo orario</span><span>Ore</span><span class="r">Totale</span><span></span></div>
+        <div id="opList"></div>
+        <button class="add" id="addOp" type="button"><span>＋</span> Aggiungi operatore</button>
+        <div class="rec" data-cost="tec"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
+
+        <!-- FURGONE -->
+        <div style="margin-top:16px;padding-top:15px;border-top:1px dashed var(--line)">
+          <div class="subh">Furgone <span class="tot num" id="totFurg" style="float:none">0,00 €</span></div>
+          <div class="row2">
+            <label class="fld"><span>Costo orario (per furgone)</span>
+              <div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" id="furgOra" placeholder="0,00"><span class="suf">/ h</span></div></label>
+            <label class="fld"><span>Ore</span>
+              <div class="inp"><input type="number" step="any" min="0" id="furgOre" placeholder="0"><span class="suf">h</span></div></label>
           </div>
-          <div>
-            <div class="subh">Tecnico <span class="tot num" id="totTec" style="float:none">0,00 €</span></div>
-            <div class="row2">
-              <label class="fld"><span>Costo orario</span>
-                <div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" id="tecOra" placeholder="0,00"><span class="suf">/ h</span></div></label>
-              <label class="fld"><span>Ore</span>
-                <div class="inp"><input type="number" step="any" min="0" id="tecOre" placeholder="0"><span class="suf">h</span></div></label>
-            </div>
-            <div class="rec" data-cost="tec"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
-          </div>
+          <div class="note" id="vanNote" style="margin-top:10px">Furgoni necessari: <b>1</b> · il costo orario è moltiplicato per il numero di furgoni.</div>
+          <div class="rec" data-cost="furg"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
         </div>
-        <div class="warn">Il costo orario del furgone copre ammortamento/leasing, assicurazione, bollo e manutenzione, ma <b>non il gasolio</b> (già sopra). Il costo orario del tecnico dev'essere il <b>costo aziendale pieno</b>: lordo + contributi INPS (~30%), INAIL, TFR, 13ª/14ª, ferie e permessi — non il netto né il lordo in busta.</div>
+        <div class="warn">Il costo orario del furgone copre ammortamento/leasing, assicurazione, bollo e manutenzione, ma <b>non il gasolio</b> (già sopra), e va moltiplicato per il numero di furgoni. Il costo orario di ogni operatore dev'essere il <b>costo aziendale pieno</b>: lordo + contributi INPS (~30%), INAIL, TFR, 13ª/14ª, ferie e permessi — non il netto né il lordo in busta.</div>
 
         <details class="helper">
-          <summary>Calcola il costo orario aziendale del tecnico</summary>
+          <summary>Calcola il costo orario aziendale di un operatore</summary>
           <div class="hb">
             <div class="row3">
               <label class="fld"><span>RAL annua lorda</span>
@@ -301,7 +313,8 @@ aside{position:sticky;top:24px}
   const g=id=>document.getElementById(id);
   const val=el=>{if(!el)return 0;const v=parseFloat(String(el.value).replace(',','.'));return isNaN(v)?0:v;};
   const LS='fluentfinance_margine_v2';
-  const FIELDS=['lkm','km','prezzoGas','furgOra','furgOre','tecOra','tecOre','indPct','margPct','margMinPct','ivaPct','iresPct','irapPct','hRal','hOneri','hOre'];
+  const FIELDS=['lkm','km','prezzoGas','furgOra','furgOre','indPct','margPct','margMinPct','ivaPct','iresPct','irapPct','hRal','hOneri','hOre'];
+  const OPS_PER_VAN=2;   // operatori per furgone (2 posti passeggeri)
   let metodo='margine';
   // derattizzante: parametri fissi per la logica a zollette
   const DERAT_G=20;      // grammi per zolletta
@@ -310,6 +323,22 @@ aside{position:sticky;top:24px}
   let factors={mat:1,gas:1,furg:1,tec:1};
   const facTag=k=>factors[k]===12?' ×12':(factors[k]<1?' ÷12':'');
   const matList=g('matList');
+  const opList=g('opList');
+
+  function addOpRow(ora='',ore=''){
+    const row=document.createElement('div');row.className='oprow';
+    row.innerHTML=
+      '<div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" class="opOra" placeholder="0,00"><span class="suf">/ h</span></div>'+
+      '<div class="inp"><input type="number" step="any" min="0" class="opOre" placeholder="0"><span class="suf">h</span></div>'+
+      '<div class="opsub num">0,00 €</div>'+
+      '<button class="del" type="button" title="Rimuovi operatore">✕</button>';
+    row.querySelector('.opOra').value=ora;
+    row.querySelector('.opOre').value=ore;
+    row.querySelector('.opOra').addEventListener('input',recalc);
+    row.querySelector('.opOre').addEventListener('input',recalc);
+    row.querySelector('.del').addEventListener('click',()=>{row.remove();if(!opList.querySelector('.oprow'))addOpRow();recalc();});
+    opList.appendChild(row);
+  }
 
   function addMatRow(desc='',price='',qty='1'){
     const row=document.createElement('div');row.className='matrow';
@@ -365,9 +394,19 @@ aside{position:sticky;top:24px}
     const consumo=val(g('lkm'));
     const litri=consumo>0?val(g('km'))/consumo:0;
     const totGas=litri*val(g('prezzoGas'))*factors.gas;
-    // furgone, tecnico
-    const totFurg=val(g('furgOra'))*val(g('furgOre'))*factors.furg;
-    const totTec =val(g('tecOra'))*val(g('tecOre'))*factors.tec;
+    // operatori: somma dei (costo orario × ore) per riga
+    let totTecRaw=0, nOps=0;
+    opList.querySelectorAll('.oprow').forEach(row=>{
+      nOps++;
+      const sub=val(row.querySelector('.opOra'))*val(row.querySelector('.opOre'));
+      totTecRaw+=sub;
+      row.querySelector('.opsub').textContent=eur(sub);
+    });
+    const totTec=totTecRaw*factors.tec;
+    // furgoni: 2 operatori per furgone → arrotondamento per eccesso, minimo 1
+    const nVans=Math.max(1,Math.ceil(nOps/OPS_PER_VAN));
+    const totFurg=val(g('furgOra'))*val(g('furgOre'))*nVans*factors.furg;
+    g('vanNote').innerHTML='Furgoni necessari: <b>'+nVans+'</b> · '+nOps+' operator'+(nOps===1?'e':'i')+' (2 per furgone). Il costo orario è moltiplicato per '+nVans+'.';
     // costi diretti → costo pieno
     const diretti=totMat+totGas+totFurg+totTec;
     const indPct=val(g('indPct'));
@@ -409,8 +448,8 @@ aside{position:sticky;top:24px}
     g('gasNote').innerHTML='Litri totali: <b>'+fmtE.format(litri)+' L</b>';
     g('rMatLab').textContent='Materiale'+facTag('mat');
     g('rGasLab').textContent='Gasolio'+facTag('gas');
-    g('rFurgLab').textContent='Furgone'+facTag('furg');
-    g('rTecLab').textContent='Tecnico'+facTag('tec');
+    g('rFurgLab').textContent='Furgone'+(nVans>1?' ×'+nVans:'')+facTag('furg');
+    g('rTecLab').textContent='Operatori'+(nOps>1?' ('+nOps+')':'')+facTag('tec');
     g('rMat').textContent=eur(totMat);
     g('rGas').textContent=eur(totGas);
     g('rFurg').textContent=eur(totFurg);
@@ -449,8 +488,10 @@ aside{position:sticky;top:24px}
   function snapshot(){
     const mat=[...matList.querySelectorAll('.matrow')].map(r=>({
       desc:r.querySelector('.mDesc').value,price:r.querySelector('.mPrice').value,qty:r.querySelector('.mQty').value}));
+    const ops=[...opList.querySelectorAll('.oprow')].map(r=>({
+      ora:r.querySelector('.opOra').value,ore:r.querySelector('.opOre').value}));
     const f={};FIELDS.forEach(id=>f[id]=g(id).value);
-    return {mat,f,metodo,factors};
+    return {mat,ops,f,metodo,factors};
   }
   function persist(){try{localStorage.setItem(LS,JSON.stringify(snapshot()));}catch(e){}}
 
@@ -464,6 +505,8 @@ aside{position:sticky;top:24px}
     if(s&&s.factors)factors={mat:1,gas:1,furg:1,tec:1,...s.factors};
     if(s&&Array.isArray(s.mat)&&s.mat.length){s.mat.forEach(m=>addMatRow(m.desc||'',m.price||'',m.qty||'1'));}
     else addMatRow();
+    if(s&&Array.isArray(s.ops)&&s.ops.length){s.ops.forEach(o=>addOpRow(o.ora||'',o.ore||''));}
+    else addOpRow();
     syncAllRec();
   }
 
@@ -480,9 +523,14 @@ aside{position:sticky;top:24px}
     }));
   });
   g('addMat').addEventListener('click',()=>{addMatRow();recalc();});
+  g('addOp').addEventListener('click',()=>{addOpRow();recalc();});
   g('hUsa').addEventListener('click',()=>{
     const ral=val(g('hRal')),oneri=val(g('hOneri')),oreAnno=val(g('hOre'));
-    if(ral>0&&oreAnno>0){g('tecOra').value=fmtE.format(ral*(1+oneri/100)/oreAnno);recalc();}
+    if(ral>0&&oreAnno>0){
+      const v=fmtE.format(ral*(1+oneri/100)/oreAnno);
+      opList.querySelectorAll('.opOra').forEach(el=>el.value=v); // applica a tutti gli operatori
+      recalc();
+    }
   });
   g('reset').addEventListener('click',()=>{
     if(!confirm('Azzerare tutti i campi del calcolo del margine?'))return;
@@ -501,7 +549,9 @@ aside{position:sticky;top:24px}
     });
     setSeg('margine');
     factors={mat:1,gas:1,furg:1,tec:1};syncAllRec();
-    matList.innerHTML='';addMatRow();recalc();
+    matList.innerHTML='';addMatRow();
+    opList.innerHTML='';addOpRow();
+    recalc();
   });
 
   restore();
