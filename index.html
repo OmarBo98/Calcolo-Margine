@@ -68,6 +68,23 @@ header.page p{margin:7px 0 0;color:var(--muted);max-width:70ch;font-size:13.5px}
 .msub{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--text);font-weight:600;white-space:nowrap}
 .mhint{grid-column:1/-1;margin:-3px 2px 2px;font-family:var(--mono);font-size:11px;color:var(--emerald-d);background:rgba(15,135,107,.07);border:1px solid rgba(15,135,107,.22);border-radius:7px;padding:5px 9px}
 .mhint b{color:var(--emerald-d);font-weight:700}
+/* dotazioni: contenuto conteggiato */
+.dothint{grid-column:1/-1;margin:-3px 2px 2px;font-family:var(--mono);font-size:11px;color:var(--blue);background:rgba(44,99,214,.06);border:1px solid rgba(44,99,214,.2);border-radius:7px;padding:6px 9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dothint b{color:#1f49a0;font-weight:700}
+.dothint .dcp{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;background:#fff}
+.dothint .dcp .pre,.dothint .dcp .suf{padding:0 6px;color:var(--muted);font-size:10.5px}
+.dothint .dcp input{width:66px;border:0;outline:0;background:transparent;padding:4px 5px;font-family:var(--mono);font-size:11.5px;text-align:right;color:var(--text)}
+.dothint .dcp input::-webkit-outer-spin-button,.dothint .dcp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.dothint .dcp input[type=number]{-moz-appearance:textfield}
+.dotbadge{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#E7F0FB;color:#27518f;border-radius:999px;padding:1px 6px;font-family:var(--disp)}
+/* menu aggiungi voce */
+.addwrap{position:relative;display:inline-block}
+.addmenu{position:absolute;top:calc(100% + 6px);left:0;z-index:20;min-width:260px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);padding:5px;display:flex;flex-direction:column;gap:2px}
+.addmenu[hidden]{display:none}
+.addmenu button{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:9px 11px;cursor:pointer;font-family:var(--body);font-size:13.5px;font-weight:600;color:var(--text);line-height:1.25;transition:.12s}
+.addmenu button small{display:block;font-weight:400;font-size:11px;color:var(--muted);margin-top:1px}
+.addmenu button:hover{background:var(--bg)}
+.addmenu-sep{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 11px 4px;border-top:1px solid var(--line-soft,#eef1f4);margin-top:3px}
 .inp input[readonly]{color:var(--muted);cursor:not-allowed}
 .inp.lock{background:var(--bg)}
 .del{width:32px;height:38px;border:1px solid var(--line);background:#fff;border-radius:9px;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.12s}
@@ -169,7 +186,17 @@ aside{position:sticky;top:24px}
         <p class="ph">Una voce per materiale, al <b>prezzo di acquisto</b> (non di vendita), con quantità.</p>
         <div class="mathead"><span>Descrizione</span><span class="r">Prezzo</span><span class="r">Q.tà</span><span class="r">Totale</span><span></span></div>
         <div id="matList"></div>
-        <button class="add" id="addMat" type="button"><span>＋</span> Aggiungi voce</button>
+        <div class="addwrap">
+          <button class="add" id="addMat" type="button" aria-haspopup="true" aria-expanded="false"><span>＋</span> Aggiungi voce <b style="font-weight:700">▾</b></button>
+          <div class="addmenu" id="addMenu" hidden>
+            <button type="button" data-add="manual">Voce manuale<small>scrivi tu descrizione e prezzo</small></button>
+            <div class="addmenu-sep">Dotazioni (contenuto conteggiato in automatico)</div>
+            <button type="button" data-add="erogatore">Erogatore esterno<small>40 g esca rodenticida / cad</small></button>
+            <button type="button" data-add="stazione">Stazione interna<small>1 vaschetta collante / cad</small></button>
+            <button type="button" data-add="lampada">Lampada UV<small>1 foglio collante / cad</small></button>
+          </div>
+        </div>
+        <div class="note">Le <b>dotazioni</b> si vendono una volta sola: con <b>Spesa mensile ×12</b> viene annualizzato solo il loro <b>contenuto</b> (esca, vaschette, fogli), non l'apparecchio.</div>
         <div class="rec" data-cost="mat"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
       </div>
 
@@ -183,7 +210,7 @@ aside{position:sticky;top:24px}
           <label class="fld"><span>Km percorsi</span>
             <div class="inp"><input type="number" step="any" min="0" id="km" placeholder="0"><span class="suf">km</span></div></label>
           <label class="fld"><span>Prezzo gasolio</span>
-            <div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" id="prezzoGas" value="1,922"><span class="suf">/ L</span></div></label>
+            <div class="inp"><span class="pre">€</span><input type="number" step="any" min="0" id="prezzoGas" value="1.922"><span class="suf">/ L</span></div></label>
         </div>
         <div class="note" id="gasNote">Litri totali: <b>0,00 L</b></div>
         <div class="note" style="margin-top:0">Precompilato con la media nazionale self-service <b>1,922 €/L</b> (MIMIT, giu 2026): aggiornalo col prezzo reale.</div>
@@ -259,7 +286,7 @@ aside{position:sticky;top:24px}
           <label class="fld"><span>IRES</span>
             <div class="inp"><input type="number" step="any" min="0" id="iresPct" value="24"><span class="suf">%</span></div></label>
           <label class="fld"><span>IRAP</span>
-            <div class="inp"><input type="number" step="any" min="0" id="irapPct" value="3,9"><span class="suf">%</span></div></label>
+            <div class="inp"><input type="number" step="any" min="0" id="irapPct" value="3.9"><span class="suf">%</span></div></label>
         </div>
         <div class="note"><b>IVA</b> neutra per l'azienda (a debito/detraibile): fuori dal margine, serve solo per il totale al cliente — 22% su disinfestazione, derattizzazione e sanificazione. <b>IRES 24% + IRAP 3,9%</b> sono stimate sul guadagno dell'intervento (IRAP con manodopera a tempo indeterminato dedotta): danno l'utile netto reale che resta.</div>
       </div>
@@ -359,37 +386,80 @@ aside{position:sticky;top:24px}
     matList.appendChild(row);
   }
 
+  // dotazioni: apparecchio venduto 1 volta + contenuto consumabile (annualizzabile)
+  const DOT={
+    erogatore:{name:'Erogatore esterno', cons:'esca rodenticida', q:40, unit:'g',  kind:'bait',  price:'3.9', psuf:'€/kg'},
+    stazione :{name:'Stazione interna',  cons:'vaschetta collante', q:1, unit:'pz', kind:'pezzo', price:'',     psuf:'€/cad'},
+    lampada  :{name:'Lampada UV',        cons:'foglio collante',    q:1, unit:'pz', kind:'pezzo', price:'',     psuf:'€/cad'}
+  };
+  const nf=n=>fmtE.format(n).replace(',00','');
+  function addDotRow(type,price='',qty='1',cons=null){
+    const cfg=DOT[type]; if(!cfg)return;
+    const row=document.createElement('div');row.className='matrow dotrow';row.dataset.dot=type;
+    row.innerHTML=
+      '<div class="inp dw"><input type="text" class="txt mDesc"></div>'+
+      '<div class="inp pw"><span class="pre">€</span><input type="number" step="any" min="0" class="mPrice" placeholder="prezzo app."></div>'+
+      '<div class="inp qw"><span class="pre">×</span><input type="number" step="any" min="0" class="mQty" placeholder="1"></div>'+
+      '<div class="msub num">0,00 €</div>'+
+      '<button class="del" type="button" title="Rimuovi dotazione">✕</button>'+
+      '<div class="dothint"><span class="dotbadge">Dotazione · 1 volta</span><span class="dtxt"></span>'+
+        '<span class="dcp"><span class="pre">€</span><input type="number" step="any" min="0" class="dcPrice"><span class="suf">'+cfg.psuf+'</span></span>'+
+        '<span class="dres"></span></div>';
+    row.querySelector('.mDesc').value=cfg.name;
+    row.querySelector('.mPrice').value=price;
+    row.querySelector('.mQty').value=qty;
+    row.querySelector('.dcPrice').value=(cons!=null?cons:cfg.price);
+    row.querySelectorAll('input').forEach(i=>i.addEventListener('input',recalc));
+    row.querySelector('.del').addEventListener('click',()=>{row.remove();recalc();});
+    matList.appendChild(row);
+  }
+
   function prezzoDa(base,pct){
     if(metodo==='margine'){const m=Math.min(pct,99.9)/100;return (1-m)>0?base/(1-m):base;}
     return base*(1+pct/100);
   }
 
   function recalc(){
-    // materiale: prezzo acquisto × quantità (subtotale riga grezzo, totale card × fattore ricorrenza)
-    let totMatRaw=0;
+    // materiale: parte ricorrente (×fattore) + parte fissa dotazioni (sempre ×1)
+    const recLbl=factors.mat===12?'×12':(factors.mat<1?'÷12':'');
+    let recurringRaw=0, fixedRaw=0;
     matList.querySelectorAll('.matrow').forEach(row=>{
-      const descEl=row.querySelector('.mDesc'), priceEl=row.querySelector('.mPrice'),
-            qtyEl=row.querySelector('.mQty'), hint=row.querySelector('.mhint');
-      const isDerat=/derattizzant/i.test(descEl.value);
-      let unit, sub;
-      if(isDerat){
-        // zolletta: 20 g × 3,90 €/kg = 0,078 € ciascuna; Q.tà = numero di zollette
-        unit=DERAT_G/1000*DERAT_KG;
-        priceEl.value='0,078'; priceEl.readOnly=true; priceEl.parentElement.classList.add('lock');
-        qtyEl.placeholder='zollette';
-        const n=val(qtyEl);
-        sub=unit*n;
-        hint.style.display='block';
-        hint.innerHTML='Derattizzante · <b>'+fmtE.format(n).replace(',00','')+' zollette</b> × 20 g × 3,90 €/kg = <b>'+eur(sub)+'</b> ('+eur(unit)+'/zolletta)';
+      if(row.classList.contains('dotrow')){
+        // dotazione: apparecchio (1 volta) + contenuto (annualizzabile)
+        const cfg=DOT[row.dataset.dot];
+        const equipPrice=val(row.querySelector('.mPrice')), qty=val(row.querySelector('.mQty'));
+        const cPrice=val(row.querySelector('.dcPrice'));
+        const consPerDev=cfg.kind==='bait'?(cfg.q/1000*cPrice):(cfg.q*cPrice);
+        const equipPart=equipPrice*qty, consPart=consPerDev*qty;
+        fixedRaw+=equipPart; recurringRaw+=consPart;
+        row.querySelector('.msub').textContent=eur(equipPart+consPart);
+        row.querySelector('.dtxt').innerHTML='Contenuto: <b>'+nf(cfg.q*qty)+' '+cfg.unit+'</b> '+cfg.cons+' ('+nf(cfg.q)+' '+cfg.unit+'/cad × '+nf(qty)+') ·';
+        const consApplied=consPart*factors.mat;
+        row.querySelector('.dres').innerHTML='= <b>'+eur(consPart)+'</b>'+(recLbl?' → '+recLbl+' <b>'+eur(consApplied)+'</b>':'')+' · apparecchio <b>'+eur(equipPart)+'</b> (1 volta)';
       }else{
-        if(priceEl.readOnly){priceEl.readOnly=false;priceEl.parentElement.classList.remove('lock');priceEl.value='';}
-        qtyEl.placeholder='1';
-        sub=val(priceEl)*val(qtyEl);
-        hint.style.display='none';
+        const descEl=row.querySelector('.mDesc'), priceEl=row.querySelector('.mPrice'),
+              qtyEl=row.querySelector('.mQty'), hint=row.querySelector('.mhint');
+        const isDerat=/derattizzant/i.test(descEl.value);
+        let unit, sub;
+        if(isDerat){
+          // zolletta: 20 g × 3,90 €/kg = 0,078 € ciascuna; Q.tà = numero di zollette
+          unit=DERAT_G/1000*DERAT_KG;
+          priceEl.value='0.078'; priceEl.readOnly=true; priceEl.parentElement.classList.add('lock');
+          qtyEl.placeholder='zollette';
+          const n=val(qtyEl);
+          sub=unit*n;
+          hint.style.display='block';
+          hint.innerHTML='Derattizzante · <b>'+nf(n)+' zollette</b> × 20 g × 3,90 €/kg = <b>'+eur(sub)+'</b> ('+eur(unit)+'/zolletta)';
+        }else{
+          if(priceEl.readOnly){priceEl.readOnly=false;priceEl.parentElement.classList.remove('lock');priceEl.value='';}
+          qtyEl.placeholder='1';
+          sub=val(priceEl)*val(qtyEl);
+          hint.style.display='none';
+        }
+        recurringRaw+=sub;row.querySelector('.msub').textContent=eur(sub);
       }
-      totMatRaw+=sub;row.querySelector('.msub').textContent=eur(sub);
     });
-    const totMat=totMatRaw*factors.mat;
+    const totMat=recurringRaw*factors.mat+fixedRaw;
     // gasolio: km / (km/L) = litri ; litri × €/L
     const consumo=val(g('lkm'));
     const litri=consumo>0?val(g('km'))/consumo:0;
@@ -486,8 +556,10 @@ aside{position:sticky;top:24px}
   function syncAllRec(){document.querySelectorAll('.rec').forEach(syncRec);}
 
   function snapshot(){
-    const mat=[...matList.querySelectorAll('.matrow')].map(r=>({
-      desc:r.querySelector('.mDesc').value,price:r.querySelector('.mPrice').value,qty:r.querySelector('.mQty').value}));
+    const mat=[...matList.querySelectorAll('.matrow')].map(r=>{
+      if(r.classList.contains('dotrow'))
+        return {k:'dot',type:r.dataset.dot,price:r.querySelector('.mPrice').value,qty:r.querySelector('.mQty').value,cons:r.querySelector('.dcPrice').value};
+      return {desc:r.querySelector('.mDesc').value,price:r.querySelector('.mPrice').value,qty:r.querySelector('.mQty').value};});
     const ops=[...opList.querySelectorAll('.oprow')].map(r=>({
       ora:r.querySelector('.opOra').value,ore:r.querySelector('.opOre').value}));
     const f={};FIELDS.forEach(id=>f[id]=g(id).value);
@@ -503,7 +575,9 @@ aside{position:sticky;top:24px}
     if(s&&s.f){FIELDS.forEach(id=>{if(s.f[id]!==undefined&&s.f[id]!=='')g(id).value=s.f[id];});}
     if(s&&s.metodo)setSeg(s.metodo);
     if(s&&s.factors)factors={mat:1,gas:1,furg:1,tec:1,...s.factors};
-    if(s&&Array.isArray(s.mat)&&s.mat.length){s.mat.forEach(m=>addMatRow(m.desc||'',m.price||'',m.qty||'1'));}
+    if(s&&Array.isArray(s.mat)&&s.mat.length){s.mat.forEach(m=>{
+      if(m.k==='dot')addDotRow(m.type,m.price||'',m.qty||'1',m.cons);
+      else addMatRow(m.desc||'',m.price||'',m.qty||'1');});}
     else addMatRow();
     if(s&&Array.isArray(s.ops)&&s.ops.length){s.ops.forEach(o=>addOpRow(o.ora||'',o.ore||''));}
     else addOpRow();
@@ -522,12 +596,20 @@ aside{position:sticky;top:24px}
       syncRec(grp);recalc();
     }));
   });
-  g('addMat').addEventListener('click',()=>{addMatRow();recalc();});
+  // menu "Aggiungi voce": manuale oppure una dotazione
+  const addBtn=g('addMat'), addMenu=g('addMenu');
+  const closeMenu=()=>{addMenu.hidden=true;addBtn.setAttribute('aria-expanded','false');};
+  addBtn.addEventListener('click',e=>{e.stopPropagation();const show=addMenu.hidden;addMenu.hidden=!show;addBtn.setAttribute('aria-expanded',String(show));});
+  addMenu.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+    const t=b.dataset.add; if(t==='manual')addMatRow(); else addDotRow(t);
+    closeMenu(); recalc();
+  }));
+  document.addEventListener('click',e=>{if(!addMenu.hidden&&!e.target.closest('.addwrap'))closeMenu();});
   g('addOp').addEventListener('click',()=>{addOpRow();recalc();});
   g('hUsa').addEventListener('click',()=>{
     const ral=val(g('hRal')),oneri=val(g('hOneri')),oreAnno=val(g('hOre'));
     if(ral>0&&oreAnno>0){
-      const v=fmtE.format(ral*(1+oneri/100)/oreAnno);
+      const v=(ral*(1+oneri/100)/oreAnno).toFixed(2); // punto decimale: valido per input number
       opList.querySelectorAll('.opOra').forEach(el=>el.value=v); // applica a tutti gli operatori
       recalc();
     }
@@ -536,13 +618,13 @@ aside{position:sticky;top:24px}
     if(!confirm('Azzerare tutti i campi del calcolo del margine?'))return;
     try{localStorage.removeItem(LS);}catch(e){}
     document.querySelectorAll('.wrap input').forEach(i=>{
-      if(i.id==='prezzoGas')i.value='1,922';
+      if(i.id==='prezzoGas')i.value='1.922';
       else if(i.id==='indPct')i.value='30';
       else if(i.id==='margPct')i.value='25';
       else if(i.id==='margMinPct')i.value='10';
       else if(i.id==='ivaPct')i.value='22';
       else if(i.id==='iresPct')i.value='24';
-      else if(i.id==='irapPct')i.value='3,9';
+      else if(i.id==='irapPct')i.value='3.9';
       else if(i.id==='hOneri')i.value='45';
       else if(i.id==='hOre')i.value='1600';
       else i.value='';
