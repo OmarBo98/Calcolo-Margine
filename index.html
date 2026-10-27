@@ -162,6 +162,31 @@ aside{position:sticky;top:24px}
 .netbox .v{font-family:var(--disp);font-size:24px;font-weight:600;margin-top:3px;color:#eafff6}
 .netbox .g{margin-top:5px;font-size:11.5px;color:#bfe8d9}
 
+/* prospetto contratto */
+.prosp{margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.prosp .shead{padding:13px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.prosp .psub{letter-spacing:.04em;color:var(--emerald-d);font-size:9px}
+.pline{display:flex;justify-content:space-between;align-items:baseline;padding:10px 16px;border-bottom:1px solid var(--line-soft,#eef1f4)}
+.pline .l{color:var(--text);font-size:13px}
+.pline .l small{color:var(--muted);font-weight:400}
+.pline .v{font-family:var(--mono);font-weight:600;font-size:13.5px;color:var(--text)}
+.pline.big{background:rgba(15,135,107,.05)}
+.pline.big .l{font-weight:600}
+.pline.big .v{color:var(--emerald-d)}
+.pline.sub .l{padding-left:12px;color:var(--muted);font-size:12px}
+.pline.sub .v{font-size:12.5px;color:var(--muted)}
+.pline.tot{background:var(--ink)}
+.pline.tot .l{color:#fff;font-weight:600;font-size:13px}
+.pline.tot .v{color:#fff;font-size:15px}
+.psupp{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--line-soft,#eef1f4)}
+.psupp>span:first-child{font-size:12px;color:var(--muted)}
+.psupp .pinp{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff}
+.psupp .pinp .pre{padding:0 7px;color:var(--muted);font-size:12px}
+.psupp .pinp input{width:70px;border:0;outline:0;background:transparent;padding:7px 8px;font-family:var(--mono);font-size:13px;text-align:right;color:var(--text)}
+.psupp .pinp input::-webkit-outer-spin-button,.psupp .pinp input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.psupp .pinp input[type=number]{-moz-appearance:textfield}
+.pnote{padding:11px 16px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.5}
+.pnote b{color:var(--text)}
 .reset{display:block;width:100%;margin-top:14px;padding:11px;border:1px solid var(--line);background:#fff;border-radius:9px;color:var(--muted);font-family:var(--body);font-size:13.5px;cursor:pointer;transition:.12s}
 .reset:hover{border-color:var(--ink);color:var(--ink)}
 .foot{margin-top:24px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6}
@@ -322,6 +347,20 @@ aside{position:sticky;top:24px}
         <div class="line sub"><span class="l">Prezzo minimo (guad. <span id="rMinLab">10</span>%)</span><span class="v num" id="rPrezzoMin">0,00 €</span></div>
         <div class="line"><span class="l">Spazio di sconto</span><span class="v num" id="rSconto">0,00 € · 0%</span></div>
       </div>
+
+      <!-- PROSPETTO CONTRATTO -->
+      <div class="prosp">
+        <div class="shead">Prospetto contratto <span class="psub">imponibile · mensile</span></div>
+        <div class="pline big"><span class="l">Installazione <small>(1ª mensilità)</small></span><span class="v num" id="prInstall">0,00 €</span></div>
+        <div class="pline sub"><span class="l">· Dotazioni (una tantum)</span><span class="v num" id="prDot">0,00 €</span></div>
+        <div class="pline sub"><span class="l">· Servizio installazione <small>(monitoraggio + <span id="prSupplLab">20</span> €)</span></small><span class="v num" id="prInstServ">0,00 €</span></div>
+        <div class="pline big"><span class="l">Mesi successivi <small>(monitoraggio)</small></span><span class="v num" id="prMon">0,00 €</span></div>
+        <div class="pline tot"><span class="l">Primo anno (12 mesi)</span><span class="v num" id="prAnno">0,00 €</span></div>
+        <label class="psupp"><span>Supplemento installazione</span>
+          <span class="pinp"><span class="pre">€</span><input type="number" step="any" min="0" id="supplInst" value="20"></span></label>
+        <div class="pnote">Monitoraggio = servizio mensile ricorrente (materiale di consumo, gasolio, furgone, operatori), senza apparecchi. Le <b>dotazioni</b> si pagano solo nella 1ª mensilità. Importi IVA esclusa; sempre su base mensile, a prescindere dai pulsanti ×12/÷12.</div>
+      </div>
+
       <button class="reset" id="reset" type="button">Azzera tutto</button>
     </aside>
   </div>
@@ -340,7 +379,7 @@ aside{position:sticky;top:24px}
   const g=id=>document.getElementById(id);
   const val=el=>{if(!el)return 0;const v=parseFloat(String(el.value).replace(',','.'));return isNaN(v)?0:v;};
   const LS='fluentfinance_margine_v2';
-  const FIELDS=['lkm','km','prezzoGas','furgOra','furgOre','indPct','margPct','margMinPct','ivaPct','iresPct','irapPct','hRal','hOneri','hOre'];
+  const FIELDS=['lkm','km','prezzoGas','furgOra','furgOre','indPct','margPct','margMinPct','ivaPct','iresPct','irapPct','supplInst','hRal','hOneri','hOre'];
   const OPS_PER_VAN=2;   // operatori per furgone (2 posti passeggeri)
   let metodo='margine';
   // derattizzante: parametri fissi per la logica a zollette
@@ -499,6 +538,17 @@ aside{position:sticky;top:24px}
     const ivaPct=val(g('ivaPct'));
     const iva=prezzo*ivaPct/100;
     const totale=prezzo+iva;
+    // --- PROSPETTO CONTRATTO (base mensile, indipendente dalle ricorrenze ×12/÷12) ---
+    // prezzo di vendita = costi diretti × (1+indiretti) con il margine scelto
+    const sell=d=>prezzoDa(d*(1+indPct/100),margPct);
+    const servMensDir=recurringRaw+litri*val(g('prezzoGas'))+val(g('furgOra'))*val(g('furgOre'))*nVans+totTecRaw; // monitoraggio: ricorrenti di 1 mese, SENZA apparecchi
+    const equipDir=fixedRaw;                       // dotazioni: una tantum
+    const pMon=sell(servMensDir);                  // monitoraggio mensile (imponibile)
+    const pDot=sell(equipDir);                     // dotazioni (imponibile)
+    const suppl=val(g('supplInst'));               // supplemento installazione
+    const pInstServ=pMon+suppl;                    // servizio di installazione = monitoraggio + supplemento
+    const pInstall=pDot+pInstServ;                 // 1ª mensilità
+    const pAnno=pInstall+11*pMon;                  // primo anno (12 mesi)
     // trattativa
     const margMinPct=val(g('margMinPct'));
     const pareggio=pieno;
@@ -546,6 +596,13 @@ aside{position:sticky;top:24px}
     g('rPrezzoMin').textContent=eur(prezzoMin);
     const scOk=scontoMax>0.005;
     g('rSconto').textContent=(scOk?eur(scontoMax):eur(0))+' · '+(scOk?pctTxt(scontoPct):'0%');
+    // prospetto contratto
+    g('prDot').textContent=eur(pDot);
+    g('prInstServ').textContent=eur(pInstServ);
+    g('prSupplLab').textContent=nf(suppl);
+    g('prInstall').textContent=eur(pInstall);
+    g('prMon').textContent=eur(pMon);
+    g('prAnno').textContent=eur(pAnno);
     persist();
   }
 
@@ -625,6 +682,7 @@ aside{position:sticky;top:24px}
       else if(i.id==='ivaPct')i.value='22';
       else if(i.id==='iresPct')i.value='24';
       else if(i.id==='irapPct')i.value='3.9';
+      else if(i.id==='supplInst')i.value='20';
       else if(i.id==='hOneri')i.value='45';
       else if(i.id==='hOre')i.value='1600';
       else i.value='';
