@@ -224,7 +224,7 @@ aside{position:sticky;top:24px}
             <button type="button" data-add="lampada">Lampada UV<small>1 foglio collante / cad</small></button>
           </div>
         </div>
-        <div class="note">Le <b>dotazioni</b> sono una vendita <b>una tantum</b> in installazione, a <b>prezzo cliente fisso</b> (non ricaricato): imposti il prezzo di vendita, e separatamente il tuo costo (apparecchio + materiale interno). Le voci manuali sono invece il materiale di consumo del <b>monitoraggio mensile</b> (quello sì soggetto a ×12/÷12).</div>
+        <div class="note">Ogni <b>dotazione</b> vale due cose: l'<b>installazione</b> (vendita una tantum a prezzo cliente fisso − costo apparecchio) e il suo <b>contenuto</b> (esca/vaschetta/foglio), che è <b>materiale di consumo mensile del monitoraggio</b> — ricaricato a ogni visita, quindi conta × numero di dotazioni e ×12 nell'anno, e confluisce nella voce Materiale. Le voci manuali sono altro materiale di consumo del monitoraggio.</div>
         <div class="rec" data-cost="mat"><span class="rec-lab">Ricorrenza</span><button type="button" class="rec-btn" data-rec="mensile">Spesa mensile <b>×12</b></button><button type="button" class="rec-btn" data-rec="singola">Spesa singola <b>÷12</b></button></div>
       </div>
 
@@ -356,7 +356,7 @@ aside{position:sticky;top:24px}
         <div class="shead">Prospetto contratto <span class="psub">imponibile · mensile</span></div>
         <div class="pline big"><span class="l">Installazione <small>(1ª mensilità)</small></span><span class="v num" id="prInstall">0,00 €</span></div>
         <div class="pline sub"><span class="l">· Dotazioni al cliente (una tantum)</span><span class="v num" id="prDot">0,00 €</span></div>
-        <div class="pline sub tiny"><span class="l">&nbsp;&nbsp;di cui tuo costo</span><span class="v num" id="prDotCost">0,00 €</span></div>
+        <div class="pline sub tiny"><span class="l">&nbsp;&nbsp;di cui tuo costo (apparecchi)</span><span class="v num" id="prDotCost">0,00 €</span></div>
         <div class="pline sub tiny"><span class="l">&nbsp;&nbsp;margine dotazioni</span><span class="v num" id="prDotMargin">0,00 €</span></div>
         <div class="pline sub"><span class="l">· Servizio installazione <small>(monitoraggio + <span id="prSupplLab">20</span> €)</span></small><span class="v num" id="prInstServ">0,00 €</span></div>
         <div class="pline big"><span class="l">Mesi successivi <small>(monitoraggio)</small></span><span class="v num" id="prMon">0,00 €</span></div>
@@ -471,22 +471,24 @@ aside{position:sticky;top:24px}
     // materiale ricorrente di monitoraggio (×fattore) + dotazioni vendute a prezzo fisso (una tantum)
     const recLbl=factors.mat===12?'×12':(factors.mat<1?'÷12':'');
     let recurringRaw=0;
-    let dotSell=0, dotCost=0;   // vendita al cliente e tuo costo delle dotazioni (installazione)
+    let dotSell=0, dotCost=0;   // vendita al cliente e tuo costo (apparecchio) delle dotazioni (installazione)
     matList.querySelectorAll('.matrow').forEach(row=>{
       if(row.classList.contains('dotrow')){
-        // dotazione: prezzo cliente FISSO (non ricaricato); tuo costo = apparecchio + contenuto
+        // dotazione = due parti distinte:
+        //  1) INSTALLAZIONE (una tantum): prezzo cliente FISSO − costo apparecchio
+        //  2) CONTENUTO (mensile): materiale dentro la dotazione, ricaricato ogni visita → va nel MONITORAGGIO (×n dotazioni, ×12 nell'anno)
         const cfg=DOT[row.dataset.dot];
         const sell=val(row.querySelector('.mPrice')), qty=val(row.querySelector('.mQty'));
         const dCost=val(row.querySelector('.dCost'));
         const cPrice=val(row.querySelector('.dcPrice'));
         const consPerDev=cfg.kind==='bait'?(cfg.q/1000*cPrice):(cfg.q*cPrice);
-        const costPerDev=dCost+consPerDev;
-        const sellTot=sell*qty, costTot=costPerDev*qty;
-        dotSell+=sellTot; dotCost+=costTot;
+        const sellTot=sell*qty, equipTot=dCost*qty, consTot=consPerDev*qty;
+        dotSell+=sellTot; dotCost+=equipTot;      // installazione: solo apparecchio
+        recurringRaw+=consTot;                    // contenuto: materiale mensile di monitoraggio
         row.querySelector('.msub').textContent=eur(sellTot);
-        row.querySelector('.dtxt2').innerHTML=' + <b>'+nf(cfg.q)+' '+cfg.unit+'</b> '+cfg.cons+' ×'+nf(qty)+' a';
-        const margPerDev=sell-costPerDev;
-        row.querySelector('.dres').innerHTML='→ costo <b>'+eur(costPerDev)+'</b>/cad · vendita <b>'+eur(sell)+'</b>/cad · <b>margine '+eur(margPerDev)+'</b>/cad';
+        row.querySelector('.dtxt2').innerHTML=' · contenuto mensile <b>'+nf(cfg.q)+' '+cfg.unit+'</b> '+cfg.cons+' ×'+nf(qty)+' a';
+        const margPerDev=sell-dCost;
+        row.querySelector('.dres').innerHTML='→ installaz.: vendita <b>'+eur(sell)+'</b> − app. <b>'+eur(dCost)+'</b> = <b>margine '+eur(margPerDev)+'</b>/cad · contenuto <b>'+eur(consTot)+'</b>/mese nel monitoraggio';
       }else{
         const descEl=row.querySelector('.mDesc'), priceEl=row.querySelector('.mPrice'),
               qtyEl=row.querySelector('.mQty'), hint=row.querySelector('.mhint');
